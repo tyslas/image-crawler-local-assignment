@@ -71,7 +71,6 @@ public class UnsynchronizedArray<E> implements Array<E> {
      */
     public UnsynchronizedArray(int initialCapacity) {
         // TODO -- you fill in here.
-        
     }
 
     /**
@@ -84,7 +83,6 @@ public class UnsynchronizedArray<E> implements Array<E> {
      */
     public UnsynchronizedArray(Collection<? extends E> c) {
         // TODO -- you fill in here.
-        
     }
 
     /**
@@ -183,7 +181,6 @@ public class UnsynchronizedArray<E> implements Array<E> {
     @Override
     public void rangeCheck(int index) {
         // TODO -- you fill in here.
-        
     }
 
     /**
@@ -208,7 +205,6 @@ public class UnsynchronizedArray<E> implements Array<E> {
      * @throws IndexOutOfBoundsException
      */
     public E set(int index, E element) {
-        // TODO -- you fill in here (replace 'return null' with proper code).
         return null;
     }
 
@@ -219,7 +215,6 @@ public class UnsynchronizedArray<E> implements Array<E> {
      * @return {@code true}
      */
     public boolean add(E element) {
-        // TODO -- you fill in here (replace 'return false' with proper code).
         return false;
     }
 
@@ -232,7 +227,6 @@ public class UnsynchronizedArray<E> implements Array<E> {
      */
     protected void ensureCapacityInternal(int minCapacity) {
         // TODO -- you fill in here.
-        
     }
 
     /**
@@ -332,7 +326,6 @@ public class UnsynchronizedArray<E> implements Array<E> {
         // This method is a no-op in Assignment 1a.
         if (isAssignment(Assignment1b)) {
             // TODO - you fill in here (this implementation can use a for loop).
-            
         }
     }
 
@@ -354,19 +347,15 @@ public class UnsynchronizedArray<E> implements Array<E> {
         if (isGraduate(Assignment1a)) {
             // TODO - Graduate students you fill in here
             //  using a for-each loop for assignment 1a.
-            
         } else if (isGraduate(Assignment1b)) {
             // TODO - Graduate students you fill in here using the
             //  Java stream forEach() method for assignment 1b.
-            
         } else if (isUndergraduate(Assignment1a)) {
             // TODO - Undergraduate students you fill in here using
             //  a simple for loop for assignment 1a.
-            
         } else if (isUndergraduate(Assignment1b)) {
             // TODO - Undergraduate students you fill in here
             //  using a for-each loop for assignment 1b.
-            
         } else {
             throw new IllegalStateException("unreachable");
         }
@@ -411,13 +400,11 @@ public class UnsynchronizedArray<E> implements Array<E> {
          * Current position in the Array (defaults to 0).
          */
         // TODO - you fill in here.
-        
 
         /**
          * Index of last element returned; -1 if no such element.
          */
         // TODO - you fill in here.
-        
 
         /**
          * @return True if the iteration has more elements that
@@ -450,7 +437,6 @@ public class UnsynchronizedArray<E> implements Array<E> {
         @Override
         public void remove() {
             // TODO - you fill in here
-            
         }
     }
 }
