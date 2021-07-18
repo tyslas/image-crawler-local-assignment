@@ -1,6 +1,7 @@
 package edu.vanderbilt.imagecrawler.utils;
 
 import java.net.URL;
+import java.util.List;
 
 /**
  * An interface defining the operations that must be supported by
@@ -46,7 +47,7 @@ public interface Crawler {
          * @param types Types to retrieve (PAGE and/or IMAGE).
          * @return An array of matching WebPageElements.
          */
-        Array<WebPageElement> getPageElements(Type... types);
+        List<WebPageElement> getPageElements(Type... types);
 
         /**
          * Returns all children objects of a given type (PAGE or IMAGE).
@@ -54,7 +55,7 @@ public interface Crawler {
          * @param types Types to retrieve (PAGE and/or IMAGE).
          * @return An array of matching url strings.
          */
-        Array<String> getPageElementsAsStrings(Type... types);
+        List<String> getPageElementsAsStrings(Type... types);
 
         /**
          * Returns the URLs for all children objects that match the specified
@@ -63,6 +64,6 @@ public interface Crawler {
          * @param types Types to retrieve (PAGE and/or IMAGE).
          * @return An array of matching URLS.
          */
-        Array<URL> getPageElementsAsUrls(Type... types);
+        List<URL> getPageElementsAsUrls(Type... types);
     }
 }
