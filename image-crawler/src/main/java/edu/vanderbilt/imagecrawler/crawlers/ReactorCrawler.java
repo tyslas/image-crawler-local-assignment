@@ -1,11 +1,14 @@
 package edu.vanderbilt.imagecrawler.crawlers;
 
 import java.net.URL;
+import java.util.concurrent.ForkJoinPool;
 
 import edu.vanderbilt.imagecrawler.utils.Crawler;
 import edu.vanderbilt.imagecrawler.utils.Image;
+import edu.vanderbilt.imagecrawler.utils.Options;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 /**
  * This class uses Project Reactor Flux and Mono reactive types to
@@ -34,21 +37,16 @@ public class ReactorCrawler
 
         // TODO -- you fill in here replacing this statement with your
         // solution.
-        return 0;
-            // Crawl the page using the specified uri and depth.
-            
-
-            // Count the number of elements in the Flux stream.
-            
-
-            // Return 0 if any exception is encountered.
-            
-
-            // Block to get the result.
-            
-
-            // Convert the result to an int primitive.
-            
+        // Crawl the page using the specified uri and depth.
+        return crawlPageAsync(pageUri, depth)
+                // Count the number of elements in the Flux stream.
+                .count()
+                // Return 0 if any exception is encountered.
+                .onErrorReturn(0L)
+                // Block to get the result.
+                .block()
+                // Convert the result to an int primitive.
+                .intValue();
     }
 
     /**
@@ -71,20 +69,28 @@ public class ReactorCrawler
 
         // TODO -- you fill in here replacing this statement with your
         // solution.
-        return null;
-            // Create an Flux that emits this pageUri.
-            
+        Mono<String> pageMono = Mono.fromCallable(Options::getRootUrlLocator)
+                .transformDeferred(
+                        mono -> mono.subscribeOn(
+                                Schedulers.fromExecutor(ForkJoinPool.commonPool()))
+                );
+        // Create an Flux that emits this pageUri.
+        return getImagesOnPage(mWebPageCrawler.getPage(pageUri)).stream()
+                // Filter out page if it exceeds the depth or has already
+                // been visited.
+                .filter(page -> depth > mMaxDepth)
+                .filter(page -> mUniqueUris.putIfAbsent(page.getPath()))
+                // Map the url to a page.
+                .map(url -> mWebPageCrawler.getPage(url.getPath()))
+                // Apply the flatMap() concurrency idiom to convert each
+                // page to a Flux stream of images asynchronously.
+                .flatMap(page -> Flux.fromIterable(page.getPageElements(Crawler.Type.IMAGE))
+                    .flatMap(hyperlink -> Mono.fromCallable(() -> hyperlink)
+                    .transformDeferred(
+                            mono -> mono.subscribeOn(
+                                    Schedulers.fromExecutor(ForkJoinPool.commonPool())))
+                        .flatMap(url -> )));
 
-            // Filter out page if it exceeds the depth or has already
-            // been visited.
-            
-
-            // Map the url to a page.
-            
-
-            // Apply the flatMap() concurrency idiom to convert each
-            // page to an Flux stream of images asynchronously.
-            
     }
 
     /**
