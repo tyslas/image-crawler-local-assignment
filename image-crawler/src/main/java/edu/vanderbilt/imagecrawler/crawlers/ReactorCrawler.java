@@ -189,17 +189,16 @@ public class ReactorCrawler
         // TODO -- you fill in here replacing this statement with your
         // solution.
             // Create an Flux that emits the URL.
-        Flux<Image> imageFlux = Flux.from(Mono.fromCallable(() -> url))
+        return Flux.from(Mono.fromCallable(() -> url))
                 // Run computation in the parallel scheduler.
                 .subscribeOn(Schedulers.parallel())
-            // Map the image URL to a possibly downloaded image.
+                // Map the image URL to a possibly downloaded image.
                 .map(url1 -> mImageCache.getItem(url1.getPath(), null))
                 .onErrorStop()
-            // Only continue processing if an image was available.
-                .flatMap(item -> Optional.ofNullable(item))
-                .map(o -> Mono.just(o));
-            // Convert optionals into values.
-        return null;
+                // Only continue processing if an image was available.
+                .flatMap(Optional::ofNullable)
+                // Convert optionals into values.
+                .map(Mono::just);
     }
 
     /**
