@@ -1,5 +1,7 @@
 package edu.vanderbilt.imagecrawler.crawlers;
 
+import static edu.vanderbilt.imagecrawler.utils.Crawler.Type.PAGE;
+
 import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.ForkJoinPool;
@@ -76,12 +78,13 @@ public class ReactorCrawler
 //                                Schedulers.fromExecutor(ForkJoinPool.commonPool()))
 //                );
         // Create an Flux that emits this pageUri.
-        return Flux.fromStream(getImagesOnPage(mWebPageCrawler.getPage(pageUri)).stream())
+        Flux<String> pageFlux = Flux.from(Mono.fromCallable(() -> pageUri));
+        return Flux.just(pageFlux)
                 // Filter out page if it exceeds the depth or has already
                 // been visited.
-                .filter(page -> depth > mMaxDepth || mUniqueUris.putIfAbsent(page.getPath()))
+                .filter(uri -> depth > mMaxDepth || mUniqueUris.putIfAbsent(uri.toString()))
                 // Map the url to a page.
-                .map(url -> mWebPageCrawler.getPage(url.getPath()))
+                .map(uri -> mWebPageCrawler.getPage(uri.toString()))
                 // Apply the flatMap() concurrency idiom to convert each
                 // page to a Flux stream of images asynchronously.
                 .flatMap(page -> imagesOnPageAndPageLinksAsync(page, depth));
@@ -128,15 +131,11 @@ public class ReactorCrawler
         // solution.
         // Convert the list of page links into an Flux
         // stream of page links.
-        return Flux.fromIterable(page.getPageElements(Crawler.Type.PAGE, Crawler.Type.IMAGE))
+        return Flux.fromIterable(page.getPageElementsAsStrings(PAGE))
                 // Apply the flatMap() concurrency idiom to map each page
                 // to a stream of images that are downloaded and
                 // transformed concurrently via the parallel scheduler.
-                .flatMap(webPageElement ->
-                        webPageElement.getType().equals(Crawler.Type.PAGE) ?
-                                crawlPageAsync(webPageElement.getUrl(), depth) :
-                                imagesOnPageAsync(mWebPageCrawler.getPage(webPageElement.getUrl())))
-                .subscribeOn(Schedulers.parallel());
+                .flatMap(s -> crawlPageAsync(s, depth));
     }
 
     /**
@@ -158,15 +157,14 @@ public class ReactorCrawler
         // solution.
         // Convert the list of images in the page into an
         // Flux stream.
-        return Flux.fromStream(page.getPageElementsAsUrls(Crawler.Type.IMAGE).stream())
+        return Flux.fromIterable(page.getPageElementsAsUrls(Crawler.Type.IMAGE))
                 // Apply the flatMap() concurrency idiom to download
                 // the stream of images in parallel.
                 .flatMap(this::downloadImageAsync)
                 // Again apply the flatMap() concurrency idiom to convert
                 // the stream of downloaded images into a stream of images
-                .flatMap(this::transformImageAsync)
                 // are transformed in parallel.
-                .subscribeOn(Schedulers.parallel());
+                .flatMap(this::transformImageAsync);
     }
 
     /**
@@ -189,16 +187,17 @@ public class ReactorCrawler
         // TODO -- you fill in here replacing this statement with your
         // solution.
             // Create an Flux that emits the URL.
-        return Flux.from(Mono.fromCallable(() -> url))
-                // Run computation in the parallel scheduler.
-                .subscribeOn(Schedulers.parallel())
-                // Map the image URL to a possibly downloaded image.
-                .map(url1 -> mImageCache.getItem(url1.getPath(), null))
-                .onErrorStop()
-                // Only continue processing if an image was available.
-                .flatMap(Optional::ofNullable)
-                // Convert optionals into values.
-                .map(Mono::just);
+        return null;
+//        return Flux.from(Mono.fromCallable(() -> url))
+//                // Run computation in the parallel scheduler.
+//                .subscribeOn(Schedulers.parallel())
+//                // Map the image URL to a possibly downloaded image.
+//                .map(url1 -> mImageCache.getItem(url1.getPath(), null))
+//                .onErrorStop()
+//                // Only continue processing if an image was available.
+//                .flatMap(Optional::ofNullable)
+//                // Convert optionals into values.
+//                .map(Mono::just);
     }
 
     /**
